@@ -1,0 +1,23 @@
+{
+  "name": "cable-handshake.ts",
+  "version": "0.0.0",
+  "author": "Kira Oakley <kira@eight45.net>",
+  "description": "TypeScript implementation of the Cable Handshake Protocol.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cabal-club/cable-handshake.ts.git"
+  },
+  "keywords": [
+    "p2p",
+    "cable"
+  ],
+  "bugs": {
+    "url": "https://github.com/cabal-club/cable-handshake.ts/issues"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^16.1.1"
+  },
+  "homepage": "https://github.com/cabal-club/cable-handshake.ts",
+  "license": "AGPL-3.0"
+}
+
