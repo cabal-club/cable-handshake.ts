@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "author": "Kira Oakley <kira@eight45.net>",
   "description": "TypeScript implementation of the Cable Handshake Protocol.",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cabal-club/cable-handshake.ts.git"
@@ -15,9 +18,18 @@
     "url": "https://github.com/cabal-club/cable-handshake.ts/issues"
   },
   "devDependencies": {
-    "@tsconfig/node16": "^16.1.1"
+    "@tsconfig/node16": "^16.1.1",
+    "@types/mutexify": "^1.2.3",
+    "@types/node": "^20.10.6",
+    "@types/noise-handshake": "^3.0.3",
+    "@types/tape": "^5.6.4",
+    "tape": "^5.7.2",
+    "typescript": "^5.3.3"
   },
   "homepage": "https://github.com/cabal-club/cable-handshake.ts",
-  "license": "AGPL-3.0"
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "mutexify": "^1.4.0",
+    "noise-handshake": "github:hackergrrl/noise-handshake#NNpsk0"
+  }
 }
-
