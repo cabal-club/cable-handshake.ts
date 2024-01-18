@@ -1,5 +1,5 @@
-import CipherState from 'noise-handshake/cipher'
-import { AsyncStream } from './async-stream'
+import CipherState from 'noise-handshake/cipher.js'
+import { AsyncStream } from './async-stream.js'
 
 export class PostHandshakeTransport {
   private tx: CipherState

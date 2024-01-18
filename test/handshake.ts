@@ -1,6 +1,6 @@
 import tape from 'tape'
-import { Handshake } from '../src/handshake'
-import { FauxSocket } from './util'
+import { Handshake } from '../src/handshake.js'
+import { FauxSocket } from './util.js'
 
 function setup() {
   const a = new FauxSocket()

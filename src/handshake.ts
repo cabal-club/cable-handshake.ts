@@ -1,9 +1,9 @@
 import NoiseState from 'noise-handshake'
 import * as dh from 'noise-handshake/dh.js'
-import { Noise } from './noise'
+import { Noise } from './noise.js'
 import { Duplex } from 'stream'
-import { AsyncStream } from '../src/async-stream'
-import { PostHandshakeTransport } from './post-handshake-transport'
+import { AsyncStream } from '../src/async-stream.js'
+import { PostHandshakeTransport } from './post-handshake-transport.js'
 import debug from 'debug'
 
 const VERSION                       = Buffer.from([1,0])  // <01 00>

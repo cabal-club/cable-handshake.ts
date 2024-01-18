@@ -1,6 +1,6 @@
 import tape from 'tape'
-import { AsyncStream } from '../src/async-stream'
-import { Throttle, ErrorStream, briefly } from './util'
+import { AsyncStream } from '../src/async-stream.js'
+import { Throttle, ErrorStream, briefly } from './util.js'
 
 tape('write+read with stream end', async t => {
   t.plan(5)

@@ -1,5 +1,5 @@
 import NoiseState from 'noise-handshake'
-import CipherState from 'noise-handshake/cipher'
+import CipherState from 'noise-handshake/cipher.js'
 
 const PROLOGUE = Buffer.from('CABLE')
 
