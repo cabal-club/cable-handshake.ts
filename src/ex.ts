@@ -13,6 +13,10 @@ async function client() {
   const tx = await hs.handshake()
 
   tx.write(Buffer.from('Hello Cable world!'))
+
+  socket.once('close', () => {
+    console.log('client socket closed')
+  })
 }
 
 async function server() {
@@ -23,10 +27,15 @@ async function server() {
     const hs = new Handshake(key, PSK, false, socket)
     const tx = await hs.handshake()
 
-    const msg = await tx.read()
-    console.log('Server recv\'d: ', msg.toString())
+    socket.once('close', () => {
+      console.log('server socket closed')
+      server.close()
+    })
 
-    socket.destroy()
+    const msg = await tx.read()
+    console.log('Server recv\'d:', msg.toString())
+
+    tx.destroy()
   })
 
   server.listen(7500, undefined, undefined, () => console.log('Listening on 0.0.0.0:7500'))

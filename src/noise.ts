@@ -34,9 +34,5 @@ export class Noise {
     const rx = new CipherState(this.noise.rx)
     return this.initiator ? [tx, rx] : [tx, rx]
   }
-
-  // XXX: noise-handshake doesn't expose an API for cleanup
-  // cleanup() {
-  // }
 }
 

@@ -1,6 +1,8 @@
 import tape from 'tape'
 import { Handshake } from '../src/handshake.js'
 import { FauxSocket } from './util.js'
+import net from 'net'
+import getPort from 'get-port'
 
 function setup() {
   const a = new FauxSocket()
@@ -277,5 +279,44 @@ tape('ensure fragmentation works due to long message', t => {
     })
     .catch(err => {
       t.error(err)
+    })
+})
+
+tape('handshake concludes properly when destroyed', t => {
+  t.plan(1)
+
+  getPort()
+    .then(async port => {
+      const PSK = Buffer.alloc(32).fill(0x08)
+      const clientKey = Handshake.generateKeyPair()
+      const serverKey = Handshake.generateKeyPair()
+
+      const server = net.createServer(async socket => {
+        const hs = new Handshake(serverKey, PSK, false, socket)
+        const tx = await hs.handshake()
+
+        socket.once('close', () => {
+          console.log('server socket closed')
+          server.close()
+        })
+
+        const msg = (await tx.read()).toString()
+        t.equals(msg, 'Hello Cable world!', 'received string ok')
+
+        tx.destroy()
+      }).listen(port)
+
+      const socket = net.connect({ host: 'localhost', port })
+      const hs = new Handshake(clientKey, PSK, true, socket)
+      const tx = await hs.handshake()
+
+      tx.write(Buffer.from('Hello Cable world!'))
+
+      socket.once('close', () => {
+        console.log('client socket closed')
+      })
+    })
+    .catch(err => {
+      t.error(err, 'should not have failed to get port')
     })
 })

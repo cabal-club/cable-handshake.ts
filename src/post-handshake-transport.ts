@@ -33,9 +33,8 @@ export class PostHandshakeTransport {
   }
 
   async destroy() {
-    // XXX: how to end 'stream'? 'stream.destroy()'?
     // TODO: https://github.com/cabal-club/cable/issues/17
-    throw new Error('not implemented')
+    this.stream.destroy()
   }
 }
 

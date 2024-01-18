@@ -37,6 +37,10 @@ export class AsyncStream {
     this.stream.end()
   }
 
+  destroy(err?: Error | undefined) {
+    this.stream.destroy(err)
+  }
+
   write(bytes: Buffer | string) {
     this.stream.write(bytes)
   }
