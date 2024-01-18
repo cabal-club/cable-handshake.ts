@@ -77,7 +77,6 @@ export class Handshake {
       return new PostHandshakeTransport(this.stream, c[0], c[1])
     } catch (err) {
       this.state = State.Failed
-      this.noise.cleanup()
       throw err
     }
   }

@@ -35,8 +35,8 @@ export class Noise {
     return this.initiator ? [tx, rx] : [tx, rx]
   }
 
-  cleanup() {
-    // this.noise._clear()
-  }
+  // XXX: noise-handshake doesn't expose an API for cleanup
+  // cleanup() {
+  // }
 }
 
