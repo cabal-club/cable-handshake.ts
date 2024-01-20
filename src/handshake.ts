@@ -134,51 +134,39 @@ export class Handshake {
   }
 
   writeVersion() {
-    // TODO: fail if this is the wrong time to call this
     this.write(VERSION)
   }
 
   async readAndCompareVersion(): Promise<boolean> {
-    // Initiator_ReadVersion | Responder_ReadVersion
-    // TODO: fail if this is the wrong time to call this
     const data = await this.read(PROTOCOL_VERSION_MSG_LEN)
     return this.isVersionCompatible(data)
   }
 
   async readVersion(): Promise<Buffer> {
-    // Initiator_ReadVersion | Responder_ReadVersion
-    // TODO: fail if this is the wrong time to call this
     return await this.read(PROTOCOL_VERSION_MSG_LEN)
   }
 
   writeEphemeralKey() {
-    // TODO: fail if this is the wrong time to call this
     this.stream.write(this.noise.send())
   }
 
   async readEphemeralKey() {
-    // TODO: fail if this is the wrong time to call this
     this.noise.recv(await this.stream.read(EPHEMERAL_KEY_LEN))
   }
 
   writeEphemeralAndStaticKey() {
-    // TODO: fail if this is the wrong time to call this
     this.stream.write(this.noise.send())
   }
 
   async readEphemeralAndStaticKey() {
-    // TODO: fail if this is the wrong time to call this
     this.noise.recv(await this.stream.read(EPHEMERAL_AND_STATIC_KEY_LEN))
   }
 
   writeStaticKey() {
-    // TODO: fail if this is the wrong time to call this
-    // TODO: get from Noise instance
     this.stream.write(this.noise.send())
   }
 
   async readStaticKey() {
-    // TODO: fail if this is the wrong time to call this
     this.noise.recv(await this.stream.read(STATIC_KEY_LEN))
   }
 }
