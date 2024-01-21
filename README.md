@@ -32,6 +32,64 @@ Reads an encrypted message from the remote peer.
 ## `postHandshakeTransport.destroy()`
 Terminates the connection to the remote peer gracefully. This includes sending an end-of-stream marker so the remote knows it was an intentional close.
 
+# Example
+```js
+import { Handshake } from '../src/handshake.js'
+import net from 'net'
+
+const PSK = Buffer.alloc(32).fill(0x08)
+
+async function client() {
+  const key = Handshake.generateKeyPair()
+  console.log('Client is', key.publicKey.toString('hex'))
+
+  const socket = net.connect({ host: 'localhost', port: 7500 })
+
+  const hs = new Handshake(key, PSK, true, socket)
+  const tx = await hs.handshake()
+
+  tx.write(Buffer.from('Hello Cable world!'))
+
+  socket.once('close', () => {
+    console.log('client socket closed')
+  })
+}
+
+async function server() {
+  const key = Handshake.generateKeyPair()
+  console.log('Server is', key.publicKey.toString('hex'))
+
+  const server = net.createServer(async socket => {
+    const hs = new Handshake(key, PSK, false, socket)
+    const tx = await hs.handshake()
+
+    socket.once('close', () => {
+      console.log('server socket closed')
+      server.close()
+    })
+
+    const msg = await tx.read()
+    console.log('Server recv\'d:', msg.toString())
+
+    tx.destroy()
+  })
+
+  server.listen(7500, undefined, undefined, () => console.log('Listening on 0.0.0.0:7500'))
+}
+
+server()
+client()
+```
+outputs
+```
+Server is 7c6299bc61c3da52eeaba3d8ba606b6ddfeeabaabedcd1e292eca40613dcc41d
+Client is 4fe9e664a76974940f3611b1efa8fdd6254508b4ca55e36177ebbc3757b53030
+Listening on 0.0.0.0:7500
+Server recv'd: Hello Cable world!
+server socket closed
+client socket closed
+```
+
 # Command Line Interface (CLI)
 One can be found in `./examples/cli.ts` for testing or debug purposes. It uses stdin and stdout for communication. Two instances of this program could be piped into each other using [dupsh](https://www.npmjs.com/package/dupsh):
 

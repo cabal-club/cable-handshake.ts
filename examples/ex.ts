@@ -1,5 +1,5 @@
 import { Handshake } from '../src/handshake.js'
-import * as net from 'net'
+import net from 'net'
 
 const PSK = Buffer.alloc(32).fill(0x08)
 
