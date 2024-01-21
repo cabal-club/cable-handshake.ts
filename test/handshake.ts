@@ -12,8 +12,8 @@ function setup() {
   return { a, b }
 }
 
-tape('good handshake', t => {
-  t.plan(4)
+tape.only('good handshake', t => {
+  t.plan(6)
 
   const PSK = Buffer.alloc(32).fill('A')
   const { a, b } = setup()
@@ -29,6 +29,7 @@ tape('good handshake', t => {
       t.ok(post)
       post.write(Buffer.from('hello world'))
       t.equals((await post.read()).toString(), 'world hello')
+      post.destroy()
     })
     .catch(err => {
       t.error(err)
@@ -39,9 +40,11 @@ tape('good handshake', t => {
       t.ok(post)
       t.equals((await post.read()).toString(), 'hello world')
       post.write(Buffer.from('world hello'))
+      await post.read()
     })
     .catch(err => {
-      t.error(err)
+      t.ok(err instanceof Error)
+      t.equals(err.message, 'Connection gracefully terminated by remote', 'terminate ok')
     })
 })
 
@@ -320,3 +323,4 @@ tape('handshake concludes properly when destroyed', t => {
       t.error(err, 'should not have failed to get port')
     })
 })
+

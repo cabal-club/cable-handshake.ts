@@ -41,6 +41,11 @@ export class PostHandshakeTransport {
     const lenBytes = await this.stream.read(4)
     let len = lenBytes.readUInt32LE(0)
 
+    // Other side terminated gracefully.
+    if (len === 0) {
+      throw new Error('Connection gracefully terminated by remote')
+    }
+
     let plaintext = Buffer.alloc(0)
     while (len > 0) {
       let segmentLen = Math.min(MAX_CIPHERTEXT_MSG_LEN, len)
@@ -53,9 +58,12 @@ export class PostHandshakeTransport {
     return plaintext
   }
 
-  async destroy() {
-    // TODO: https://github.com/cabal-club/cable/issues/17
-    this.stream.destroy()
+  async destroy(err?: Error) {
+    // Send end-of-stream marker (0x00 0x00 0x00 0x00) if not ending on an error.
+    if (!err) {
+      this.stream.write(Buffer.from([0,0,0,0]))
+    }
+    this.stream.destroy(err)
   }
 }
 
