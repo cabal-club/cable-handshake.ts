@@ -24,10 +24,12 @@
   "devDependencies": {
     "@tsconfig/node16": "^16.1.1",
     "@types/debug": "^4.1.12",
+    "@types/duplexer3": "^0.1.4",
     "@types/mutexify": "^1.2.3",
     "@types/node": "^20.10.6",
     "@types/noise-handshake": "^3.0.3",
     "@types/tape": "^5.6.4",
+    "duplexer3": "^1.0.0",
     "get-port": "^7.0.0",
     "tape": "^5.7.2",
     "typescript": "^5.3.3"
