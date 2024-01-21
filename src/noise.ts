@@ -17,9 +17,7 @@ export class Noise {
   }
 
   send(): Buffer {
-    const bytes = this.noise.send()
-    // TODO: Address this hack. Could be a Uint8Array in the browser.
-    return bytes as Buffer
+    return this.noise.send() as Buffer
   }
 
   recv(bytes: Buffer) {

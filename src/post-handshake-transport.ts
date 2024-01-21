@@ -16,8 +16,6 @@ export class PostHandshakeTransport {
     this.stream = stream
   }
 
-  // TODO: look into the Uint8Array situation re: types here plz!
-
   write(bytes: Buffer) {
     // Compute & write ciphertext length
     const totalCiphertextLen =

@@ -12,10 +12,15 @@ Work-in-Progress
 
 ### `tx.recv(): Promise<Buffer>`
 
-## debug
+## debug output
 ```
 DEBUG=cable-handshake:*
 ```
+
+## Notes
+Assumes Node.js use in that `Buffer`s are used and haven't been tested against
+`Uint8Array`s on the browser. Making this module work in the browser would be a
+welcome contribution!
 
 ## License
 
