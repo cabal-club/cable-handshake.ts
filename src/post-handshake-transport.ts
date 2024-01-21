@@ -16,7 +16,11 @@ export class PostHandshakeTransport {
     this.stream = stream
   }
 
-  write(bytes: Buffer) {
+  write(bytes: Buffer | string) {
+    if (typeof bytes === 'string') {
+      bytes = Buffer.from(bytes)
+    }
+
     // Compute & write ciphertext length
     const totalCiphertextLen =
       Math.floor(bytes.length / MAX_PLAINTEXT_SEGMENT_LEN) * MAX_CIPHERTEXT_MSG_LEN +
