@@ -47,7 +47,8 @@ export class PostHandshakeTransport {
 
     // Other side terminated gracefully.
     if (len === 0) {
-      throw new Error('Connection gracefully terminated by remote')
+      this.destroyGracefully()
+      return Buffer.alloc(0)
     }
 
     let plaintext = Buffer.alloc(0)
@@ -62,11 +63,13 @@ export class PostHandshakeTransport {
     return plaintext
   }
 
-  async destroy(err?: Error) {
+  destroyGracefully() {
     // Send end-of-stream marker (0x00 0x00 0x00 0x00) if not ending on an error.
-    if (!err) {
-      this.stream.write(Buffer.from([0,0,0,0]))
-    }
+    this.stream.write(Buffer.from([0,0,0,0]))
+    this.destroy()
+  }
+
+  destroy(err?: Error) {
     this.stream.destroy(err)
   }
 }
