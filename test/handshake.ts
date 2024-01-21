@@ -12,8 +12,8 @@ function setup() {
   return { a, b }
 }
 
-tape.only('good handshake', t => {
-  t.plan(6)
+tape('good handshake', t => {
+  t.plan(4)
 
   const PSK = Buffer.alloc(32).fill('A')
   const { a, b } = setup()
