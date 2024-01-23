@@ -4,6 +4,11 @@ Implements 1.0-draft5 of the [Cable Handshake Protocol](https://github.com/cabal
 
 **WARNING**: Incomplete! Still in draft status.
 
+# Install
+```
+npm install cable-handshake.ts
+```
+
 # API
 ```
 import { Handshake } from 'cable-handshake.ts'
