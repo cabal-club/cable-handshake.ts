@@ -7,8 +7,10 @@
     "node": ">=16.0.0"
   },
   "type": "module",
+  "main": "dist/src/handshake.js",
   "scripts": {
-    "test": "tsc && tape test/*.js"
+    "test": "tsc && tape test/*.js",
+    "build": "tsc --outDir dist/ --sourceMap false"
   },
   "repository": {
     "type": "git",
@@ -16,7 +18,8 @@
   },
   "keywords": [
     "p2p",
-    "cable"
+    "cable",
+    "cabal"
   ],
   "bugs": {
     "url": "https://github.com/cabal-club/cable-handshake.ts/issues"
