@@ -34,7 +34,7 @@ Terminates the connection to the remote peer gracefully. This includes sending a
 
 # Example
 ```js
-import { Handshake } from '../src/handshake.js'
+import { Handshake } from 'cable-handshake.ts'
 import net from 'net'
 
 const PSK = Buffer.alloc(32).fill(0x08)
