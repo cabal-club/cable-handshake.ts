@@ -1,6 +1,6 @@
 {
   "name": "cable-handshake.ts",
-  "version": "0.0.0",
+  "version": "0.0.1-next.0",
   "author": "Kira Oakley <kira@eight45.net>",
   "description": "TypeScript implementation of the Cable Handshake Protocol.",
   "engines": {
