@@ -42,6 +42,6 @@
   "dependencies": {
     "debug": "^4.3.4",
     "mutexify": "^1.4.0",
-    "noise-handshake": "github:hackergrrl/noise-handshake#NNpsk0"
+    "noise-handshake": "^4.0.0"
   }
 }
