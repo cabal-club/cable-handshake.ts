@@ -47,7 +47,7 @@ export class PostHandshakeTransport {
 
     // Other side terminated gracefully.
     if (len === 0) {
-      this.destroyGracefully()
+      this.destroy()
       return Buffer.alloc(0)
     }
 
