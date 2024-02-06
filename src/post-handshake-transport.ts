@@ -38,6 +38,8 @@ export class PostHandshakeTransport {
       this.stream.write(ciphertext)
       written += toWrite.length
     }
+
+    this.sendEos()
   }
 
   // Read prefix & decrypt ciphertext segments
@@ -45,7 +47,7 @@ export class PostHandshakeTransport {
     const lenBytes = await this.stream.read(4)
     let len = lenBytes.readUInt32LE(0)
 
-    // Other side terminated gracefully.
+    // Other side terminated gracefully
     if (len === 0) {
       this.destroy()
       return Buffer.alloc(0)
@@ -63,10 +65,9 @@ export class PostHandshakeTransport {
     return plaintext
   }
 
-  destroyGracefully() {
-    // Send end-of-stream marker (0x00 0x00 0x00 0x00) if not ending on an error.
+  sendEos() {
+    // Send end-of-stream marker
     this.stream.write(Buffer.from([0,0,0,0]))
-    this.destroy()
   }
 
   destroy(err?: Error) {
