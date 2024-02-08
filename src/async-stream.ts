@@ -46,13 +46,13 @@ export class AsyncStream {
   }
 
   read(len: number): Promise<Buffer> {
-    if (this.state === State.Error) throw this.error
-    if (this.state === State.Done) throw new Error('Cannot read: stream has ended.')
-
-    let bytes = Buffer.alloc(0)
     return new Promise((resolve, reject) => {
+      if (this.state === State.Error) return reject(this.error)
+      if (this.state === State.Done) return reject(new Error('Cannot read: stream has ended.'))
+
       const lock = mutexify()
       lock(release => {
+        let bytes = Buffer.alloc(0)
         const read = () => {
           this.stream.removeListener('readable', read)
           this.stream.removeListener('end', read)
