@@ -1,8 +1,6 @@
 # cable-handshake.ts (WIP)
 
-Implements 1.0-draft5 of the [Cable Handshake Protocol](https://github.com/cabal-club/cable/blob/main/handshake.md).
-
-**WARNING**: Incomplete! Still in draft status.
+Implements 1.0-draft7 of the [Cable Handshake Protocol](https://github.com/cabal-club/cable/blob/main/handshake.md).
 
 # Install
 ```
@@ -28,14 +26,24 @@ Create a new Cable Handshake instance.
 ## `handshake.handshake(): Promise<PostHandshakeTransport>`
 Exchanges the necessary protocol messages with the remote peer to establish a secure transport.
 
-## `postHandshakeTransport.write(bytes: Buffer)`
+## `postHandshakeTransport.write(bytes: Buffer): Promise<void>`
 Writes an encrypted message to the remote peer.
 
-## `postHandshakeTransport.recv(): Promise<Buffer>`
+## `postHandshakeTransport.read(): Promise<Buffer>`
 Reads an encrypted message from the remote peer.
 
-## `postHandshakeTransport.destroy()`
-Terminates the connection to the remote peer gracefully. This includes sending an end-of-stream marker so the remote knows it was an intentional close.
+If the empty buffer is returned, it means the other side has requested to end the session. Proper etiquette is to call `postHandshakeTransport.write(Buffer.alloc(0))` and not perform any further writes.
+
+## `postHandshakeTransport.writeEos()`
+Writes the protocol's end-of-stream marker (an empty payload).
+
+Proper etiquette is to wait to receive the remote peer's end-of-stream marker, by calling `postHandshakeTransport.readEos()`.
+
+## `postHandshakeTransport.readEos()`
+Reads from the stream, expecting the next message to be an end-of-stream marker. If it is not, the promise rejects.
+
+Although proper handshake etiquette is for the remote peer to write back an end-of-stream marker, it is not guaranteed.
+
 
 # Example
 ```js

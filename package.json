@@ -28,7 +28,6 @@
     "@tsconfig/node16": "^16.1.1",
     "@types/debug": "^4.1.12",
     "@types/duplexer3": "^0.1.4",
-    "@types/mutexify": "^1.2.3",
     "@types/node": "^20.10.6",
     "@types/noise-handshake": "^3.0.3",
     "@types/tape": "^5.6.4",
@@ -41,7 +40,6 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "debug": "^4.3.4",
-    "mutexify": "^1.4.0",
     "noise-handshake": "^4.0.0"
   }
 }

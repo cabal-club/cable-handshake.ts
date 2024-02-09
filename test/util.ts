@@ -47,28 +47,3 @@ export function briefly() {
   return new Promise((resolve,_)=>{setTimeout(resolve, 100)})
 }
 
-export class FauxSocket extends Duplex {
-  private peer: Duplex | null
-
-  constructor() {
-    super()
-    this.peer = null
-  }
-
-  public setPeer(peer: Duplex) {
-    this.peer = peer
-  }
-
-  _read() {
-  }
-
-  _write(chunk: Buffer, _: BufferEncoding, callback: any) {
-    if (this.peer) this.peer.push(chunk)
-    callback()
-  }
-
-  _final() {
-    this.push(null);
-  }
-}
-

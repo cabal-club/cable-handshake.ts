@@ -4,6 +4,7 @@ import { AsyncStream } from './async-stream.js'
 const MAX_CIPHERTEXT_MSG_LEN = 65535
 const AUTH_TAG_LEN = 16
 const MAX_PLAINTEXT_SEGMENT_LEN = MAX_CIPHERTEXT_MSG_LEN - AUTH_TAG_LEN
+const EOS_MARKER = Buffer.from([0,0,0,0])
 
 export class PostHandshakeTransport {
   private tx: CipherState
@@ -16,7 +17,7 @@ export class PostHandshakeTransport {
     this.stream = stream
   }
 
-  write(bytes: Buffer | string) {
+  public async write(bytes: Buffer | string): Promise<void> {
     if (typeof bytes === 'string') {
       bytes = Buffer.from(bytes)
     }
@@ -27,7 +28,7 @@ export class PostHandshakeTransport {
       (bytes.length % MAX_PLAINTEXT_SEGMENT_LEN) + AUTH_TAG_LEN
     const lenBytes = Buffer.alloc(4)
     lenBytes.writeUInt32LE(totalCiphertextLen, 0)
-    this.stream.write(lenBytes)
+    await this.stream.write(lenBytes)
 
     // Write ciphertext segments
     let written = 0
@@ -35,21 +36,19 @@ export class PostHandshakeTransport {
       const segmentLen = Math.min(MAX_PLAINTEXT_SEGMENT_LEN, bytes.length - written)
       const toWrite = bytes.subarray(written, written + segmentLen)
       const ciphertext = this.tx.encrypt(toWrite) as Buffer
-      this.stream.write(ciphertext)
+      await this.stream.write(ciphertext)
       written += toWrite.length
     }
   }
 
+  public async writeEos(): Promise<void> {
+    await this.stream.write(EOS_MARKER)
+  }
+
   // Read prefix & decrypt ciphertext segments
-  async read(): Promise<Buffer> {
+  public async read(): Promise<Buffer> {
     const lenBytes = await this.stream.read(4)
     let len = lenBytes.readUInt32LE(0)
-
-    // Other side terminated gracefully.
-    if (len === 0) {
-      this.destroyGracefully()
-      return Buffer.alloc(0)
-    }
 
     let plaintext = Buffer.alloc(0)
     while (len > 0) {
@@ -63,14 +62,10 @@ export class PostHandshakeTransport {
     return plaintext
   }
 
-  destroyGracefully() {
-    // Send end-of-stream marker (0x00 0x00 0x00 0x00) if not ending on an error.
-    this.stream.write(Buffer.from([0,0,0,0]))
-    this.destroy()
-  }
-
-  destroy(err?: Error) {
-    this.stream.destroy(err)
+  public async readEos(): Promise<void> {
+    const msg = await this.read()
+    if (msg.length === 0) return
+    else throw new Error('did not receive expected end-of-stream marker. got ' + msg.toString())
   }
 }
 

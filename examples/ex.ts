@@ -14,6 +14,10 @@ async function client() {
 
   tx.write(Buffer.from('Hello Cable world!'))
 
+  const eos = await tx.read()
+  if (!eos.length) console.error('closed ok')
+  else console.error('failed to get end-of-stream marker')
+
   socket.once('close', () => {
     console.log('client socket closed')
   })
@@ -35,7 +39,7 @@ async function server() {
     const msg = await tx.read()
     console.log('Server recv\'d:', msg.toString())
 
-    tx.destroy()
+    await tx.writeEos()
   })
 
   server.listen(7500, undefined, undefined, () => console.log('Listening on 0.0.0.0:7500'))

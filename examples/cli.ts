@@ -27,13 +27,16 @@ async function run() {
   const tx = await hs.handshake()
 
   if (IS_INITIATOR) {
-    tx.write(MSG)
+    await tx.write(MSG)
     console.error(`${keyStr}: got "${(await tx.read()).toString()}"`)
-    tx.destroy()
+    await tx.writeEos()
   } else {
     console.error(`${keyStr}: got "${(await tx.read()).toString()}"`)
-    tx.write(MSG)
-    await tx.read()
+    await tx.write(MSG)
+
+    const eos = await tx.read()
+    if (!eos.length) console.error('closed ok')
+    else console.error('failed to get end-of-stream marker')
   }
 }
 

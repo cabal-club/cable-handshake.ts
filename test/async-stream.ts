@@ -19,13 +19,13 @@ tape('write+read with stream end', async t => {
   astream.read(10)
     .catch(err => t.ok(err, 'read fail ok'))
 
-  astream.end()
+  stream.end()
 
   await briefly()
 })
 
 tape('handle error', async t => {
-  t.plan(4)
+  t.plan(5)
 
   const stream = new ErrorStream()
   const astream = new AsyncStream(stream)
@@ -34,15 +34,21 @@ tape('handle error', async t => {
   astream.write('world')
   astream.write('party')
 
+  stream.on('error', err => {
+    t.equals(err.message, 'intentional error', 'error ok')
+  })
+
   try {
     t.equals((await astream.read(3)).toString(), 'hel', 'hel ok')
     t.equals((await astream.read(4)).toString(), 'lowo', 'lowo ok')
-    stream.write('break')
     t.equals((await astream.read(3)).toString(), 'rld', 'rld ok')
+    stream.write('break')
     t.error(await astream.read(10))
   } catch (err: any) {
-    t.equals(err.message, 'intentional error', 'error ok')
+    t.equals(err.message, 'stream has errored', 'error ok')
   }
+
+  await briefly()
 })
 
 tape('multiple readers', async t => {
@@ -54,7 +60,7 @@ tape('multiple readers', async t => {
   astream.write('approbate')
   astream.write('all')
   astream.write('artefacts')
-  astream.end()
+  stream.end()
 
   astream.read(9)
     .then(buf => t.equals(buf.toString(), 'approbate'))
