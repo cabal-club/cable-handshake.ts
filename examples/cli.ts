@@ -29,14 +29,18 @@ async function run() {
   if (IS_INITIATOR) {
     await tx.write(MSG)
     console.error(`${keyStr}: got "${(await tx.read()).toString()}"`)
+    await tx.readEos()
+    console.error(`${keyStr}: got eos`)
     await tx.writeEos()
+    console.error(`${keyStr}: wrote eos`)
   } else {
     console.error(`${keyStr}: got "${(await tx.read()).toString()}"`)
     await tx.write(MSG)
-
-    const eos = await tx.read()
-    if (!eos.length) console.error('closed ok')
-    else console.error('failed to get end-of-stream marker')
+    console.error(`${keyStr}: wrote msg`)
+    await tx.writeEos()
+    console.error(`${keyStr}: wrote eos`)
+    await tx.readEos()
+    console.error(`${keyStr}: got eos`)
   }
 }
 
