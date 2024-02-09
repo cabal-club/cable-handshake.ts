@@ -12,14 +12,14 @@ async function client() {
   const hs = new Handshake(key, PSK, true, socket)
   const tx = await hs.handshake()
 
-  tx.write(Buffer.from('Hello Cable world!'))
+  await tx.write(Buffer.from('Hello Cable world!'))
 
-  const eos = await tx.read()
-  if (!eos.length) console.error('closed ok')
-  else console.error('failed to get end-of-stream marker')
+  await tx.readEos()
+  await tx.writeEos()
+  console.log('Client closed gracefully')
 
   socket.once('close', () => {
-    console.log('client socket closed')
+    console.log('Client socket closed')
   })
 }
 
@@ -32,7 +32,7 @@ async function server() {
     const tx = await hs.handshake()
 
     socket.once('close', () => {
-      console.log('server socket closed')
+      console.log('Server socket closed')
       server.close()
     })
 
@@ -40,6 +40,9 @@ async function server() {
     console.log('Server recv\'d:', msg.toString())
 
     await tx.writeEos()
+    await tx.readEos()
+    console.log('Server closed gracefully')
+    socket.end()
   })
 
   server.listen(7500, undefined, undefined, () => console.log('Listening on 0.0.0.0:7500'))

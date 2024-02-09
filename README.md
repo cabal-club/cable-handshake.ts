@@ -32,22 +32,20 @@ Writes an encrypted message to the remote peer.
 ## `postHandshakeTransport.read(): Promise<Buffer>`
 Reads an encrypted message from the remote peer.
 
-If the empty buffer is returned, it means the other side has requested to end the session. Proper etiquette is to call `postHandshakeTransport.write(Buffer.alloc(0))` and not perform any further writes.
+If the empty buffer is returned, it means the other side has requested to end the session. Proper etiquette is to call `postHandshakeTransport.writeEos()` and not perform any further writes.
 
-## `postHandshakeTransport.writeEos()`
+## `postHandshakeTransport.writeEos(): Promise<void>`
 Writes the protocol's end-of-stream marker (an empty payload).
 
-Proper etiquette is to wait to receive the remote peer's end-of-stream marker, by calling `postHandshakeTransport.readEos()`.
+Proper etiquette is to wait to receive the remote peer's end-of-stream marker, by calling `postHandshakeTransport.readEos()`. There is no guarantee it will arrive.
 
-## `postHandshakeTransport.readEos()`
-Reads from the stream, expecting the next message to be an end-of-stream marker. If it is not, the promise rejects.
-
-Although proper handshake etiquette is for the remote peer to write back an end-of-stream marker, it is not guaranteed.
+## `postHandshakeTransport.readEos(): Promise<void>`
+Reads from the stream, expecting the next message to be an end-of-stream marker. If something else is instead received, the promise rejects. There is no guarantee the other side will end an end-of-stream marker.
 
 
 # Example
 ```js
-import { Handshake } from 'cable-handshake.ts'
+import { Handshake } from '../src/handshake.js'
 import net from 'net'
 
 const PSK = Buffer.alloc(32).fill(0x08)
@@ -61,10 +59,14 @@ async function client() {
   const hs = new Handshake(key, PSK, true, socket)
   const tx = await hs.handshake()
 
-  tx.write(Buffer.from('Hello Cable world!'))
+  await tx.write(Buffer.from('Hello Cable world!'))
+
+  await tx.readEos()
+  await tx.writeEos()
+  console.log('Client closed gracefully')
 
   socket.once('close', () => {
-    console.log('client socket closed')
+    console.log('Client socket closed')
   })
 }
 
@@ -77,14 +79,17 @@ async function server() {
     const tx = await hs.handshake()
 
     socket.once('close', () => {
-      console.log('server socket closed')
+      console.log('Server socket closed')
       server.close()
     })
 
     const msg = await tx.read()
     console.log('Server recv\'d:', msg.toString())
 
-    tx.destroy()
+    await tx.writeEos()
+    await tx.readEos()
+    console.log('Server closed gracefully')
+    socket.end()
   })
 
   server.listen(7500, undefined, undefined, () => console.log('Listening on 0.0.0.0:7500'))
@@ -95,12 +100,14 @@ client()
 ```
 outputs
 ```
-Server is 7c6299bc61c3da52eeaba3d8ba606b6ddfeeabaabedcd1e292eca40613dcc41d
-Client is 4fe9e664a76974940f3611b1efa8fdd6254508b4ca55e36177ebbc3757b53030
+Server is 8dc696e108f09a95582d7c9f1f8a3c8bf2d77a5dca4a5fbd4ca668a7229fdd78
+Client is 0ff02476d24619f4e34d2963a8f010121e447ed543133c248d9d926f0fbd1c69
 Listening on 0.0.0.0:7500
 Server recv'd: Hello Cable world!
-server socket closed
-client socket closed
+Client closed gracefully
+Server closed gracefully
+Client socket closed
+Server socket closed
 ```
 
 # Command Line Interface (CLI)
