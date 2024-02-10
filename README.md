@@ -1,4 +1,4 @@
-# cable-handshake.ts (WIP)
+# cable-handshake.ts
 
 Implements 1.0-draft7 of the [Cable Handshake Protocol](https://github.com/cabal-club/cable/blob/main/handshake.md).
 
