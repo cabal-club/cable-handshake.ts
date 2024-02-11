@@ -2,7 +2,7 @@
 
 . ./lib.sh
 
-echo "TAP version 13"
+echo "TAP version 14"
 for f in t*.sh; do
   . ${f}
 done

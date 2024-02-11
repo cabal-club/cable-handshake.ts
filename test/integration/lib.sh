@@ -19,12 +19,5 @@ function ok() {
 
 function fin() {
   echo "1..${NUM}"
-  echo "# tests $NUM"
-  echo "# pass  $NUM_PASS"
-  if [[ $NUM == $NUM_PASS ]]; then
-    echo "# ok"
-  else
-    echo "# not ok"
-  fi
 }
 
