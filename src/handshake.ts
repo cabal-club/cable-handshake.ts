@@ -57,8 +57,8 @@ export class Handshake {
     return localVersion == remoteVersion
   }
 
-  write(bytes: Buffer) {
-    this.stream.write(bytes)
+  async write(bytes: Buffer) {
+    await this.stream.write(bytes)
   }
 
   async read(len: number): Promise<Buffer> {
@@ -86,19 +86,19 @@ export class Handshake {
     this.state = State.InUse
 
     this.debug('write version')
-    this.writeVersion()
+    await this.writeVersion()
 
     this.debug('read version')
     await this.readAndCompareVersion()
 
     this.debug('write e. key')
-    this.writeEphemeralKey()
+    await this.writeEphemeralKey()
 
     this.debug('read e. + s. keys')
     await this.readEphemeralAndStaticKey()
 
     this.debug('write s. key')
-    this.writeStaticKey()
+    await this.writeStaticKey()
 
     this.debug('done')
     this.state = State.Done
@@ -113,7 +113,7 @@ export class Handshake {
     const compatible = this.isVersionCompatible(remoteVersion)
 
     this.debug('write version')
-    this.writeVersion()
+    await this.writeVersion()
     if (!compatible) {
       const localMajor = this.version.readUInt8(0)
       const remoteMajor = remoteVersion.readUInt8(0)
@@ -124,7 +124,7 @@ export class Handshake {
     await this.readEphemeralKey()
 
     this.debug('write e. + s. keys')
-    this.writeEphemeralAndStaticKey()
+    await this.writeEphemeralAndStaticKey()
 
     this.debug('read s. key')
     await this.readStaticKey()
@@ -133,8 +133,8 @@ export class Handshake {
     this.state = State.Done
   }
 
-  writeVersion() {
-    this.write(VERSION)
+  async writeVersion() {
+    await this.write(VERSION)
   }
 
   async readAndCompareVersion(): Promise<boolean> {
@@ -146,24 +146,24 @@ export class Handshake {
     return await this.read(PROTOCOL_VERSION_MSG_LEN)
   }
 
-  writeEphemeralKey() {
-    this.stream.write(this.noise.send())
+  async writeEphemeralKey() {
+    await this.stream.write(this.noise.send())
   }
 
   async readEphemeralKey() {
     this.noise.recv(await this.stream.read(EPHEMERAL_KEY_LEN))
   }
 
-  writeEphemeralAndStaticKey() {
-    this.stream.write(this.noise.send())
+  async writeEphemeralAndStaticKey() {
+    await this.stream.write(this.noise.send())
   }
 
   async readEphemeralAndStaticKey() {
     this.noise.recv(await this.stream.read(EPHEMERAL_AND_STATIC_KEY_LEN))
   }
 
-  writeStaticKey() {
-    this.stream.write(this.noise.send())
+  async writeStaticKey() {
+    await this.stream.write(this.noise.send())
   }
 
   async readStaticKey() {
