@@ -281,7 +281,7 @@ tape('stream end during handshake', t => {
 })
 
 tape('ensure fragmentation works due to long message', t => {
-  t.plan(4)
+  t.plan(7)
 
   const PSK = Buffer.alloc(32).fill('A')
 
@@ -293,13 +293,17 @@ tape('ensure fragmentation works due to long message', t => {
     const bHandshake = new Handshake(bKey, PSK, false, b)
 
     // Randomized 90kb payload
-    const PAYLOAD = Buffer.from((new Array(90_000)).map(_ => Math.floor(Math.random() * 256)))
+    const PAYLOAD = Buffer.from((new Array(290_000)).map(_ => Math.floor(Math.random() * 256)))
 
     aHandshake.handshake()
       .then(async post => {
         t.ok(post)
-        post.write(PAYLOAD)
+        t.ok(PAYLOAD.equals(await post.read()), 'payload received ok')
+        await post.write(PAYLOAD)
         t.equals((await post.read()).toString(), 'recv ok', 'ack ok')
+        await post.writeEos()
+        await post.readEos()
+        t.pass('protocol end ok')
         a.end()
       })
       .catch(err => {
@@ -309,8 +313,12 @@ tape('ensure fragmentation works due to long message', t => {
     bHandshake.handshake()
       .then(async post => {
         t.ok(post)
+        await post.write(PAYLOAD)
         t.ok(PAYLOAD.equals(await post.read()), 'payload received ok')
-        post.write(Buffer.from('recv ok'))
+        await post.write(Buffer.from('recv ok'))
+        await post.readEos()
+        await post.writeEos()
+        t.pass('protocol end ok')
       })
       .catch(err => {
         t.error(err)
