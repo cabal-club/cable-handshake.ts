@@ -14,7 +14,6 @@ export class AsyncStream {
       if (written) return resolve()
 
       const onDrain = () => {
-        this.stream.write(bytes)
         removeListeners()
         resolve()
       }
