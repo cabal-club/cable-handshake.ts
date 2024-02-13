@@ -133,6 +133,9 @@ This module hasn't been tested in an environment other than Node.js. `Buffer`s
 are used and haven't been tested against `Uint8Array`s on the browser. Making
 this module work in the browser would be a welcome contribution!
 
+# Development Dependencies
+The Rust integration tests require at least `rustc >= 1.75.0` and `cargo >= 1.75.0`.
+
 # License
 AGPL-3.0
 
