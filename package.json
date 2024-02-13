@@ -10,6 +10,7 @@
   "main": "dist/src/handshake.js",
   "scripts": {
     "test": "tsc && tape test/*.js",
+    "test-integration": "cd test/integration && ./run.sh",
     "build": "tsc --outDir dist/ --sourceMap false"
   },
   "repository": {
