@@ -38,7 +38,7 @@
     "typescript": "^5.3.3"
   },
   "homepage": "https://github.com/cabal-club/cable-handshake.ts",
-  "license": "AGPL-3.0",
+  "license": "AGPL-3.0-only",
   "dependencies": {
     "debug": "^4.3.4",
     "noise-handshake": "^4.0.0"
