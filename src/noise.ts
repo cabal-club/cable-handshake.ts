@@ -1,7 +1,7 @@
 import NoiseState from 'noise-handshake'
 import CipherState from 'noise-handshake/cipher.js'
 
-const PROLOGUE = Buffer.from('CABLE')
+const PROLOGUE = Buffer.from('CABLE1.0')
 
 export class Noise {
   private noise: NoiseState
