@@ -26,6 +26,9 @@
     "test/*.ts",
     "examples/*.ts",
     "bench/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
   ]
 }
-
