@@ -3,3 +3,5 @@ src/
 test/
 tsconfig.json
 dist/test/
+dist/examples/
+dist/bench/
