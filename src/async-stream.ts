@@ -31,7 +31,8 @@ export class AsyncStream {
     })
   }
 
-  // Read exactly `len` bytes. Undefined behaviour if called while already running.
+  // Read exactly `len` bytes. Undefined behaviour if called while already
+  // running.
   read(len: number): Promise<Buffer> {
     if (this.stream.readableEnded) {
       return Promise.reject(new Error('stream has ended'))
@@ -71,9 +72,13 @@ export class AsyncStream {
         }
 
         bytes = Buffer.concat([bytes, data])
-        if (bytes.length === len) return resolve(bytes)
-        else if (bytes.length > len) return reject(new Error('too many bytes given by stream'))
-        else read()
+        if (bytes.length === len) {
+          return resolve(bytes)
+        } else if (bytes.length > len) {
+          return reject(new Error('too many bytes given by stream'))
+        } else {
+          read()
+        }
       }
       read()
     })

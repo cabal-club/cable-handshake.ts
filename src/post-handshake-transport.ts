@@ -24,8 +24,9 @@ export class PostHandshakeTransport {
 
     // Compute & write ciphertext length
     const totalCiphertextLen =
-      Math.floor(bytes.length / MAX_PLAINTEXT_SEGMENT_LEN) * MAX_CIPHERTEXT_MSG_LEN +
-      (bytes.length % MAX_PLAINTEXT_SEGMENT_LEN) + AUTH_TAG_LEN
+        Math.floor(bytes.length / MAX_PLAINTEXT_SEGMENT_LEN) *
+        MAX_CIPHERTEXT_MSG_LEN + (bytes.length % MAX_PLAINTEXT_SEGMENT_LEN) +
+        AUTH_TAG_LEN
     const lenBytes = Buffer.alloc(4)
     lenBytes.writeUInt32LE(totalCiphertextLen, 0)
     const totalLenEncrypted = this.tx.encrypt(lenBytes) as Buffer
@@ -34,7 +35,8 @@ export class PostHandshakeTransport {
     // Write ciphertext segments
     let written = 0
     while (written < bytes.length) {
-      const segmentLen = Math.min(MAX_PLAINTEXT_SEGMENT_LEN, bytes.length - written)
+      const segmentLen =
+          Math.min(MAX_PLAINTEXT_SEGMENT_LEN, bytes.length - written)
       const toWrite = bytes.subarray(written, written + segmentLen)
       const ciphertext = this.tx.encrypt(toWrite) as Buffer
       await this.stream.write(ciphertext)
@@ -68,7 +70,9 @@ export class PostHandshakeTransport {
   public async readEos(): Promise<void> {
     const msg = await this.read()
     if (msg.length === 0) return
-    else throw new Error('did not receive expected end-of-stream marker. got ' + msg.toString())
+
+    throw new Error(
+        `did not receive expected end-of-stream marker. got ${msg.toString()}`)
   }
 }
 

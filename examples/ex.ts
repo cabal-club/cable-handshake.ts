@@ -45,7 +45,8 @@ async function server() {
     socket.end()
   })
 
-  server.listen(7500, undefined, undefined, () => console.log('Listening on 0.0.0.0:7500'))
+  server.listen(7500, undefined, undefined,
+      () => console.log('Listening on 0.0.0.0:7500'))
 }
 
 server()

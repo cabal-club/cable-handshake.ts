@@ -149,7 +149,9 @@ tape('try to reuse good handshake state', t => {
           await aHandshake.handshake()
         } catch (err) {
           t.ok(err instanceof Error, 'is error ok')
-          t.equals((err as Error).message, 'Invalid state: expected Start but got Done', 'failed to reuse handshake ok')
+          t.equals((err as Error).message,
+              'Invalid state: expected Start but got Done',
+              'failed to reuse handshake ok')
           a.end()
         }
       })
@@ -198,7 +200,9 @@ tape('try to reuse bad handshake state', t => {
           await bHandshake.handshake()
         } catch (err) {
           t.ok(err instanceof Error, 'is error ok')
-          t.equals((err as Error).message, 'Invalid state: expected Start but got Failed', 'failed to reuse handshake ok')
+          t.equals((err as Error).message,
+              'Invalid state: expected Start but got Failed',
+              'failed to reuse handshake ok')
           b.end()
         }
       })
@@ -223,7 +227,8 @@ tape('stream end during handshake', t => {
       })
       .catch(err => {
         t.ok(err instanceof Error, 'is error ok')
-        t.equals((err as Error).message, 'simulated disconnect', 'handshake failed ok')
+        t.equals((err as Error).message, 'simulated disconnect',
+            'handshake failed ok')
       })
 
     bHandshake.handshake()
@@ -232,7 +237,8 @@ tape('stream end during handshake', t => {
       })
       .catch(err => {
         t.ok(err instanceof Error, 'is error ok')
-        t.equals((err as Error).message, 'simulated disconnect', 'handshake failed ok')
+        t.equals((err as Error).message, 'simulated disconnect',
+            'handshake failed ok')
       })
 
     process.nextTick(() => {
@@ -255,7 +261,8 @@ tape('ensure fragmentation works due to long message', t => {
     const bHandshake = new Handshake(bKey, PSK, false, b)
 
     // Randomized 90kb payload
-    const PAYLOAD = Buffer.from((new Array(290_000)).map(_ => Math.floor(Math.random() * 256)))
+    const PAYLOAD = Buffer.from(
+        (new Array(290_000)).map(_ => Math.floor(Math.random() * 256)))
 
     aHandshake.handshake()
       .then(async post => {

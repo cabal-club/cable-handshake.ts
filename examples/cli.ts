@@ -3,14 +3,17 @@ import duplexer from 'duplexer3'
 import fs from 'fs'
 
 if (process.argv.length < 4) {
-  console.error(`USAGE: ${process.argv[0]} ${process.argv[1]} PSK initiator|responder MSG-TO-SEND`)
-  console.error(`USAGE: ${process.argv[0]} ${process.argv[1]} PSK initiator|responder @FILENAME`)
+  console.error(
+      `USAGE: ${process.argv[0]} ${process.argv[1]} PSK initiator|responder MSG-TO-SEND`)
+  console.error(
+      `USAGE: ${process.argv[0]} ${process.argv[1]} PSK initiator|responder @FILENAME`)
   process.exit(1)
 }
 
 const IS_INITIATOR = process.argv[3] === 'initiator'
 const PSK = Buffer.from(process.argv[2], 'hex')
-const MSG = process.argv[4].startsWith('@') ? fs.readFileSync(process.argv[4].slice(1), 'utf8') : process.argv[4]
+const MSG = process.argv[4].startsWith('@') ?
+    fs.readFileSync(process.argv[4].slice(1), 'utf8') : process.argv[4]
 
 async function run() {
   const key = Handshake.generateKeyPair()

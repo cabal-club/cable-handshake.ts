@@ -33,7 +33,8 @@ export class Handshake {
     return dh.generateKeyPair()
   }
 
-  constructor(key: NoiseState.KeyPair, psk: Buffer, initiator: boolean, stream: Duplex, noise: Noise|undefined = undefined) {
+  constructor(key: NoiseState.KeyPair, psk: Buffer, initiator: boolean,
+      stream: Duplex, noise: Noise|undefined = undefined) {
     this.debug = debug('cable-handshake:' + (initiator ? 'I' : 'R'))
     this.role = initiator ? Role.Initiator : Role.Responder
     this.stream = new AsyncStream(stream)
@@ -43,7 +44,8 @@ export class Handshake {
 
   assertState(expected: State) {
     if (this.state !== expected) {
-      throw new Error(`Invalid state: expected ${State[expected]} but got ${State[this.state]}`)
+      throw new Error(
+          `Invalid state: expected ${State[expected]} but got ${State[this.state]}`)
     }
   }
 

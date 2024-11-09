@@ -7,7 +7,8 @@ export class Noise {
   private noise: NoiseState
   private initiator: boolean
 
-  constructor(initiator: boolean, key: NoiseState.KeyPair, psk: Buffer, prologue = PROLOGUE) {
+  constructor(initiator: boolean, key: NoiseState.KeyPair, psk: Buffer,
+      prologue = PROLOGUE) {
     this.initiator = initiator
     // XXX: Some 'as any' uses to get around the types module for
     // 'noise-handshake' not having my PR's changes:
