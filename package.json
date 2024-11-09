@@ -9,7 +9,7 @@
   "type": "module",
   "main": "dist/src/handshake.js",
   "scripts": {
-    "test": "tsc && tape test/*.js",
+    "test": "tsc && tape dist/test/*.js",
     "test-integration": "cd test/integration && ./run.sh",
     "build": "tsc --sourceMap false",
     "benchmark": "npm run build && node dist/bench/messages.js && node dist/bench/handshakes.js"
