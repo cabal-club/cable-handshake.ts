@@ -11,7 +11,8 @@
   "scripts": {
     "test": "tsc && tape test/*.js",
     "test-integration": "cd test/integration && ./run.sh",
-    "build": "tsc --sourceMap false"
+    "build": "tsc --sourceMap false",
+    "benchmark": "npm run build && node dist/bench/messages.js && node dist/bench/handshakes.js"
   },
   "repository": {
     "type": "git",
