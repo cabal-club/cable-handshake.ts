@@ -18,7 +18,9 @@
     "noImplicitAny": true,
     "removeComments": false,
     "preserveConstEnums": false,
-    "sourceMap": true
+
+    "declaration": true,
+    "sourceMap": false
   },
 
   "include": [

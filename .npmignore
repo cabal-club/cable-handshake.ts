@@ -1,6 +1,7 @@
 examples/
 src/
 test/
+bench/
 tsconfig.json
 dist/test/
 dist/examples/
