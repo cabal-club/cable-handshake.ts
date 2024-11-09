@@ -6,8 +6,6 @@ import { AsyncStream } from '../src/async-stream.js'
 import { PostHandshakeTransport } from './post-handshake-transport.js'
 import debug from 'debug'
 
-const VERSION                       = Buffer.from([1,0])  // <01 00>
-const PROTOCOL_VERSION_MSG_LEN      = 2
 const STATIC_KEY_LEN                = 64
 const EPHEMERAL_KEY_LEN             = 48
 const EPHEMERAL_AND_STATIC_KEY_LEN  = 96
@@ -29,19 +27,17 @@ export class Handshake {
   private state: State
   private stream: AsyncStream
   private readonly role: Role
-  private readonly version: Buffer
   private debug: debug.Debugger
 
   static generateKeyPair(): dh.KeyPair {
     return dh.generateKeyPair()
   }
 
-  constructor(key: NoiseState.KeyPair, psk: Buffer, initiator: boolean, stream: Duplex, version = VERSION) {
+  constructor(key: NoiseState.KeyPair, psk: Buffer, initiator: boolean, stream: Duplex, noise: Noise|undefined = undefined) {
     this.debug = debug('cable-handshake:' + (initiator ? 'I' : 'R'))
     this.role = initiator ? Role.Initiator : Role.Responder
     this.stream = new AsyncStream(stream)
-    this.noise = new Noise(initiator, key, psk)
-    this.version = version
+    this.noise = noise ?? new Noise(initiator, key, psk)
     this.state = State.Start
   }
 
@@ -49,12 +45,6 @@ export class Handshake {
     if (this.state !== expected) {
       throw new Error(`Invalid state: expected ${State[expected]} but got ${State[this.state]}`)
     }
-  }
-
-  isVersionCompatible(versionBytes: Buffer): boolean {
-    const localVersion = this.version.readUint8(0)
-    const remoteVersion = versionBytes.readUint8(0)
-    return localVersion == remoteVersion
   }
 
   async write(bytes: Buffer) {
@@ -85,12 +75,6 @@ export class Handshake {
     this.assertState(State.Start)
     this.state = State.InUse
 
-    this.debug('write version')
-    await this.writeVersion()
-
-    this.debug('read version')
-    await this.readAndCompareVersion()
-
     this.debug('write e. key')
     await this.writeEphemeralKey()
 
@@ -108,18 +92,6 @@ export class Handshake {
     this.assertState(State.Start)
     this.state = State.InUse
 
-    this.debug('read version')
-    const remoteVersion = await this.read(PROTOCOL_VERSION_MSG_LEN)
-    const compatible = this.isVersionCompatible(remoteVersion)
-
-    this.debug('write version')
-    await this.writeVersion()
-    if (!compatible) {
-      const localMajor = this.version.readUInt8(0)
-      const remoteMajor = remoteVersion.readUInt8(0)
-      throw new Error(`Expected remote version ${localMajor} but got ${remoteMajor}`)
-    }
-
     this.debug('read e. key')
     await this.readEphemeralKey()
 
@@ -131,19 +103,6 @@ export class Handshake {
 
     this.debug('done')
     this.state = State.Done
-  }
-
-  async writeVersion() {
-    await this.write(VERSION)
-  }
-
-  async readAndCompareVersion(): Promise<boolean> {
-    const data = await this.read(PROTOCOL_VERSION_MSG_LEN)
-    return this.isVersionCompatible(data)
-  }
-
-  async readVersion(): Promise<Buffer> {
-    return await this.read(PROTOCOL_VERSION_MSG_LEN)
   }
 
   async writeEphemeralKey() {

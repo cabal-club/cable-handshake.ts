@@ -1,5 +1,6 @@
 import tape from 'tape'
 import { Handshake } from '../src/handshake.js'
+import { Noise } from '../src/noise.js'
 import net from 'net'
 import getPort from 'get-port'
 
@@ -102,10 +103,12 @@ tape('different major versions', t => {
 
   setup().then(({a, b}) => {
     const aKey = Handshake.generateKeyPair()
-    const aHandshake = new Handshake(aKey, PSK, true, a, Buffer.from([0x01, 0x00]))
+    const PROLOGUE = Buffer.from('CABLE5.2')
+    const noise = new Noise(true, aKey, PSK, PROLOGUE)
+    const aHandshake = new Handshake(aKey, PSK, true, a, noise)
 
     const bKey = Handshake.generateKeyPair()
-    const bHandshake = new Handshake(bKey, PSK, false, b, Buffer.from([0x02, 0x00]))
+    const bHandshake = new Handshake(bKey, PSK, false, b)
 
     aHandshake.handshake()
       .then(_ => {
@@ -121,49 +124,8 @@ tape('different major versions', t => {
       })
       .catch(err => {
         t.ok(err instanceof Error, 'error ok')
-        t.equals(err.message, 'Expected remote version 2 but got 1', 'error msg ok')
+        t.equals(err.message, 'could not verify data', 'error msg ok')
         b.end()
-      })
-  })
-})
-
-tape('different minor versions are ok', t => {
-  t.plan(6)
-
-  const PSK = Buffer.alloc(32).fill('A')
-
-  setup().then(({a, b}) => {
-    const aKey = Handshake.generateKeyPair()
-    const aHandshake = new Handshake(aKey, PSK, true, a, Buffer.from([0x01, 0x00]))
-
-    const bKey = Handshake.generateKeyPair()
-    const bHandshake = new Handshake(bKey, PSK, false, b, Buffer.from([0x01, 0x05]))
-
-    aHandshake.handshake()
-      .then(async post => {
-        t.ok(post)
-        post.write(Buffer.from('hello world'))
-        t.equals((await post.read()).toString(), 'world hello')
-        await post.writeEos()
-        await post.readEos()
-        t.pass('handshake ended ok')
-      })
-      .catch(err => {
-        t.error(err)
-      })
-
-    bHandshake.handshake()
-      .then(async post => {
-        t.ok(post)
-        t.equals((await post.read()).toString(), 'hello world')
-        post.write(Buffer.from('world hello'))
-        await post.readEos()
-        await post.writeEos()
-        t.pass('got eos ok')
-        b.end()
-      })
-      .catch(err => {
-        t.error(err)
       })
   })
 })
