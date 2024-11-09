@@ -28,7 +28,8 @@ export class PostHandshakeTransport {
       (bytes.length % MAX_PLAINTEXT_SEGMENT_LEN) + AUTH_TAG_LEN
     const lenBytes = Buffer.alloc(4)
     lenBytes.writeUInt32LE(totalCiphertextLen, 0)
-    await this.stream.write(lenBytes)
+    const totalLenEncrypted = this.tx.encrypt(lenBytes) as Buffer
+    await this.stream.write(totalLenEncrypted)
 
     // Write ciphertext segments
     let written = 0
@@ -42,12 +43,14 @@ export class PostHandshakeTransport {
   }
 
   public async writeEos(): Promise<void> {
-    await this.stream.write(EOS_MARKER)
+    const lengthEncrypted = this.tx.encrypt(EOS_MARKER) as Buffer
+    await this.stream.write(lengthEncrypted)
   }
 
   // Read prefix & decrypt ciphertext segments
   public async read(): Promise<Buffer> {
-    const lenBytes = await this.stream.read(4)
+    const lenBytesEncrypted = await this.stream.read(20)
+    let lenBytes = this.rx.decrypt(lenBytesEncrypted) as Buffer
     let len = lenBytes.readUInt32LE(0)
 
     let plaintext = Buffer.alloc(0)
