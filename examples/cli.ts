@@ -30,16 +30,21 @@ async function run() {
   console.error(`${keyStr}: ${IS_INITIATOR ? 'initiator' : 'responder'} ready!`)
   const hs = new Handshake(key, PSK, IS_INITIATOR, stream)
   const tx = await hs.handshake()
+  console.error(`${keyStr}: handshake complete`)
 
   if (IS_INITIATOR) {
+    console.error(`${keyStr}: writing msg`)
     await tx.write(MSG)
+    console.error(`${keyStr}: reading msg`)
     console.error(`${keyStr}: got "${(await tx.read()).toString()}"`)
     await tx.readEos()
     console.error(`${keyStr}: got eos`)
     await tx.writeEos()
     console.error(`${keyStr}: wrote eos`)
   } else {
+    console.error(`${keyStr}: reading msg`)
     console.error(`${keyStr}: got "${(await tx.read()).toString()}"`)
+    console.error(`${keyStr}: writing msg`)
     await tx.write(MSG)
     console.error(`${keyStr}: wrote msg`)
     await tx.writeEos()
